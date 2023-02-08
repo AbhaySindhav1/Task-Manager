@@ -4,7 +4,6 @@ const createTask = require("../models/task");
 const router = new express.Router();
 
 router.post("/task", (req, res) => {
-  console.log(req.body);
   const task = new createTask(req.body);
   try {
     task.save();
@@ -29,6 +28,7 @@ router.get("/task", async (req, res) => {
 router.get("/task/:ID", async (req, res) => {
   const id = req.params.ID;
   const taskById = await createTask.findById(id);
+  // console.log({taskById});
   try {
     if (!taskById) {
       return res.status(404).send("task not found");
@@ -41,6 +41,7 @@ router.get("/task/:ID", async (req, res) => {
 
 router.patch("/task/:id", async (req, res) => {
   const trytoUpdateTask = Object.keys(req.body);
+  // console.log({trytoUpdateTasks});
   const allowedItemForUpdateTasks = ["task", "completed", "email"];
 
   const isAllowedtoUpdateTask = trytoUpdateTask.every((item) => {
@@ -52,10 +53,17 @@ router.patch("/task/:id", async (req, res) => {
   }
 
   try {
-    const task = await createTask.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+
+    const task = await createTask.findById(req.params.id);
+    trytoUpdateTask.forEach((x)=>{
+      task[x]= req.body[x]
+    })
+    await task.save();
+
+    // const task = await createTask.findByIdAndUpdate(req.params.id, req.body, {
+    //   new: true,
+    //   runValidators: true,
+    // });
     if (!task) {
       return res.status(404).send("task not found");
     }

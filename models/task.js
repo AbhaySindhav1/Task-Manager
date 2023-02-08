@@ -18,6 +18,12 @@ completed:{type:Boolean,required:true},
 age:{type:Number}
 });
 
+schema.pre("save",async function (next) {
+  
+
+  next();
+})
+
 const createTasks = mongoose.model("Task", schema);
 
 module.exports = createTasks;
